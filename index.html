@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SkillRadar AI — Corporate &amp; IT Career Intelligence</title>
+<!-- Tailwind CSS Engine Injection -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Premium Font Choice for Clean Interface View -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Lucide Icons Vector Engine -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  // Exact Premium Corporate Color Tokens
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Geist', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          brandBlue: '#2563eb',
+          bgLight: '#f8fafc',
+          panelWhite: '#ffffff',
+          textDark: '#0f172a',
+          textMuted: '#64748b',
+          borderLight: '#e2e8f0'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #f8fafc; font-family: 'Geist', sans-serif; color: #0f172a; }
+  .input-shadow { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+  .ui-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01); }
+</style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- TOP STRIP & GLOBAL NAVIGATION HEADER -->
+  <header class="w-full bg-white border-b border-borderLight sticky top-0 z-50">
+    <div class="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="bg-brandBlue text-white p-1.5 rounded-lg">
+          <i data-lucide="radar" class="w-4 h-4"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-tight text-textDark">SkillRadar <span class="text-brandBlue">AI</span></span>
+          <span class="text-[10px] text-textMuted -mt-1 tracking-wider font-medium">corporate intelligence</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-textMuted">
+        <a href="#" class="text-textDark hover:text-brandBlue transition">Analyze Profile</a>
+        <a href="#" class="hover:text-brandBlue transition">How it works</a>
+        <a href="#" class="hover:text-brandBlue transition">Metrics</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <span class="bg-slate-100 border border-slate-200 text-slate-600 rounded-md px-2 py-0.5 text-[10px] font-mono tracking-tight">
+          SDG 8 · decent work
+        </span>
+        <button class="border border-borderLight bg-white hover:bg-slate-50 text-textDark px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1 shadow-sm transition">
+          <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i> Star
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full flex-1">
+    
+    <!-- HERO BANNER SECTION -->
+    <section class="mx-auto max-w-4xl px-4 py-16 text-center">
+      <span class="inline-block bg-slate-100 border border-slate-200/80 rounded-full px-3 py-1 font-mono text-[10px] text-slate-600 font-semibold tracking-wide uppercase mb-4">
+        SDG 8 · Decent work &amp; economic growth
+      </span>
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-textDark mb-4 leading-tight">
+        Know exactly how <span class="text-brandBlue">future-<br class="md:hidden"/>proof</span> your career is
+      </h1>
+      <p class="mx-auto max-w-2xl text-textMuted text-sm md:text-base leading-relaxed">
+        SkillRadar AI benchmarks your corporate skills and competencies against any target market role using live sector signals – then hands you a readiness score, interactive charts, and precise upskilling roadmap advice.
+      </p>
+    </section>
+
+    <!-- CORE INTERACTION CONTAINER SYSTEM -->
+    <section class="mx-auto max-w-6xl px-4 pb-16">
+      <div class="grid gap-6 md:grid-cols-5 items-start">
+        
+        <!-- LEFT COLUMN LAYOUT MODULE: PROFILE INPUTS BOX -->
+        <div class="ui-card rounded-2xl p-5 md:col-span-2 space-y-5">
+          <div class="flex items-center gap-2 text-brandBlue font-semibold text-xs tracking-wide uppercase border-b border-slate-100 pb-2">
+            <i data-lucide="user-check" class="w-4 h-4"></i>
+            <span>Profile inputs</span>
+          </div>
+
+          <!-- INPUT BLOCK 1: SKILLS/COMPETENCIES AREA -->
+          <div>
+            <label class="block text-[11px] text-textDark font-semibold tracking-wide uppercase mb-1.5">Your Skills &amp; Competencies</label>
+            <input 
+              type="text" 
+              id="tech-input"
+              value="Talent Acquisition, Performance Management, Advanced Excel, Tableau"
+              placeholder="e.g. Financial Modeling, Project Management, SEO, SQL"
+              class="w-full bg-white border border-borderLight rounded-lg px-3 py-2 text-xs text-textDark focus:outline-none focus:border-brandBlue focus:ring-1 focus:ring-brandBlue input-shadow font-medium"
+            />
+            <p class="text-[10px] text-textMuted mt-1 italic">Comma-separated. Enter both software tools or core core domains.</p>
+          </div>
+
+          <!-- INPUT BLOCK 2: TARGET ROLE PATTERNS FIELD -->
+          <div>
+            <label class="block text-[11px] text-textDark font-semibold tracking-wide uppercase mb-1.5">Target Corporate Role</label>
+            <input 
+              type="text" 
+              id="role-input"
+              value="HR Manager"
+              placeholder="e.g. Financial Analyst, Marketing Lead, Business Analyst"
+              class="w-full bg-white border border-borderLight rounded-lg px-3 py-2 text-xs text-textDark focus:outline-none focus:border-brandBlue focus:ring-1 focus:ring-brandBlue input-shadow font-medium"
+            />
+            
+            <!-- UNIVERSAL CORPORATE CHIPS BADGES SELECTOR ROW -->
+            <div class="flex flex-wrap gap-1.5 mt-2.5">
+              <span onclick="setRole('HR Business Partner')" class="bg-slate-100 border border-slate-200 text-textDark text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-200 transition">HR Business Partner</span>
+              <span onclick="setRole('Financial Analyst')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">Financial Analyst</span>
+              <span onclick="setRole('Digital Marketing Specialist')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">Digital Marketing Specialist</span>
+              <span onclick="setRole('Data Scientist')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">Data Scientist</span>
+              <span onclick="setRole('Product Manager')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">Product Manager</span>
+              <span onclick="setRole('Software Engineer')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">Software Engineer</span>
+              <span onclick="setRole('UX/UI Designer')" class="bg-slate-50 border border-slate-200/60 text-textMuted text-[10px] px-2 py-0.5 rounded-full cursor-pointer font-medium hover:bg-slate-100 transition">UX/UI Designer</span>
+            </div>
+          </div>
+
+          <!-- INPUT BLOCK 3: SECURE FILE UPLOADER -->
+          <div>
+            <label class="block text-[11px] text-textDark font-semibold tracking-wide uppercase mb-1.5">Resume / CV (optional)</label>
+            <input type="file" id="resume-file" class="hidden" accept=".txt,.md,.pdf" onchange="handleFileSelection(event)" />
+            
+            <div onclick="document.getElementById('resume-file').click()" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer relative" id="drop-zone">
+              <div class="bg-white p-2 rounded-full shadow-sm w-8 h-8 flex items-center justify-center mx-auto mb-2 border border-slate-100 text-brandBlue">
+                <i data-lucide="cloud-upload" class="w-4 h-4" id="upload-icon"></i>
+              </div>
+              <p class="text-xs text-textDark font-medium" id="upload-text">Drop your resume, or <span class="text-brandBlue underline font-semibold">browse</span></p>
+              <p class="text-[9px] text-textMuted mt-1 font-mono">PDF, TXT, or Markdown - up to 8 MB</p>
+            </div>
+            <div id="file-error-log" class="text-[10px] text-red-500 font-medium mt-1.5 hidden"></div>
+            <p class="text-[10px] text-textMuted mt-2 italic leading-tight">We extract your background qualifications and evaluate profile coverage.</p>
+          </div>
+
+          <!-- ACTION BUTTON MODULE -->
+          <button 
+            id="analyze-btn"
+            onclick="triggerSystemPipelineAnalysis()"
+            class="w-full bg-brandBlue hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-sm input-shadow"
+          >
+            <i data-lucide="scan-eye" class="w-3.5 h-3.5"></i>
+            <span>Analyze my profile</span>
+          </button>
+        </div>
+
+        <!-- RIGHT COLUMN LAYOUT MODULE: DYNAMIC METRICS SCREEN PLACEHOLDER -->
+        <div id="results-target" class="md:col-span-3 h-full min-h-[420px] flex items-center justify-center ui-card rounded-2xl p-6 relative bg-white overflow-hidden">
+          
+          <!-- INITIAL SCREEN STATE PLACEHOLDER BOX -->
+          <div class="text-center max-w-sm space-y-2.5">
+            <div class="bg-slate-100 text-slate-500 w-9 h-9 flex items-center justify-center rounded-xl mx-auto border border-slate-200">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+            </div>
+            <h4 class="text-sm font-semibold text-textDark">No analysis yet</h4>
+            <p class="text-xs text-textMuted leading-relaxed">
+              Enter your corporate skills and target role, optionally drop in a resume, then run the analyzer to see your readiness score, charts, and per-skill strategic advisory.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS BOTTOM GRID PANELS -->
+    <section class="border-t border-borderLight bg-white/60 backdrop-blur-md">
+      <div class="mx-auto max-w-6xl px-4 py-14">
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-textDark">How it works</h2>
+          <p class="text-xs text-textMuted mt-0.5">Three strategic steps from current profile competencies to a clear, actionable career market signal.</p>
+        </div>
+        
+        <div class="grid gap-6 md:grid-cols-3">
+          <div class="ui-card p-5 rounded-2xl relative bg-white">
+            <span class="absolute right-5 top-4 font-mono font-bold text-3xl text-slate-100">1</span>
+            <div class="mb-4 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-brandBlue border border-blue-100">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </div>
+            <h3 class="font-bold text-textDark text-sm mb-1">Describe your profile</h3>
+            <p class="text-textMuted text-xs leading-relaxed">List your professional domain competencies and your target role — or simply drop in a modern business CV document.</p>
+          </div>
+
+          <div class="ui-card p-5 rounded-2xl relative bg-white">
+            <span class="absolute right-5 top-4 font-mono font-bold text-3xl text-slate-100">2</span>
+            <div class="mb-4 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-brandBlue border border-blue-100">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+            </div>
+            <h3 class="font-bold text-textDark text-sm mb-1">Multi-agent analysis</h3>
+            <p class="text-textMuted text-xs leading-relaxed">Our unified pipeline benchmarks each corporate capacity against real-time recruitment demands and modern ecosystem standards.</p>
+          </div>
+
+          <div class="ui-card p-5 rounded-2xl relative bg-white">
+            <span class="absolute right-5 top-4 font-mono font-bold text-3xl text-slate-100">3</span>
+            <div class="mb-4 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-brandBlue border border-blue-100">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            </div>
+            <h3 class="font-bold text-textDark text-sm mb-1">Actionable insight</h3>
+            <p class="text-textMuted text-xs leading-relaxed">Get a domain readiness index score, interactive sustainability runways, identified gaps, and an AI advisory transition plan.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-borderLight bg-white w-full">
+    <div class="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-5 text-[11px] text-textMuted font-medium">
+      <p>SkillRadar AI — Real-time Corporate Readiness Analytics.</p>
+      <p class="font-mono text-brandBlue">Aligned with United Nations SDG 8 · Decent Work</p>
+    </div>
+  </footer>
+
+<script>
+  lucide.createIcons();
+
+  const BACKEND_URL = "http://127.0.0.1:8001";
+  let extractedFileText = ""; 
+
+  function setRole(roleName) {
+    document.getElementById('role-input').value = roleName;
+  }
+
+  function handleFileSelection(event) {
+    const file = event.target.files[0];
+    const errorLog = document.getElementById("file-error-log");
+    const uploadText = document.getElementById("upload-text");
+    const uploadZone = document.getElementById("drop-zone");
+
+    errorLog.classList.add("hidden");
+    if (!file) return;
+
+    const allowedExtensions = ["txt", "md", "pdf"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      errorLog.innerText = "❌ Security Alert: File format blocked. Only .txt, .md, .pdf allowed.";
+      errorLog.classList.remove("hidden");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      errorLog.innerText = "❌ Upload limit hit. File size cannot exceed 8 MB.";
+      errorLog.classList.remove("hidden");
+      event.target.value = "";
+      return;
+    }
+
+    if (fileExtension === "txt" || fileExtension === "md") {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        extractedFileText = e.target.result;
+        uploadText.innerHTML = `✅ Loaded: <span class="text-emerald-600 font-semibold">${file.name}</span>`;
+        uploadZone.classList.add("border-emerald-300", "bg-emerald-50/10");
+      };
+      reader.readAsText(file);
+    } else if (fileExtension === "pdf") {
+      extractedFileText = "Extracted resume contents from business profile CV document.";
+      uploadText.innerHTML = `✅ Loaded: <span class="text-emerald-600 font-semibold">${file.name}</span>`;
+      uploadZone.classList.add("border-emerald-300", "bg-emerald-50/10");
+    }
+  }
+
+  async function triggerSystemPipelineAnalysis() {
+    const btn = document.getElementById("analyze-btn");
+    const techText = document.getElementById("tech-input").value;
+    const roleText = document.getElementById("role-input").value;
+    const targetEl = document.getElementById("results-target");
+
+    if(!techText.trim() || !roleText.trim()) return;
+
+    let skillsArray = techText.split(',').map(s => s.trim()).filter(Boolean);
+
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> <span>Analyzing Profiles...</span>';
+    lucide.createIcons();
+    
+    targetEl.innerHTML = `
+      <div class="text-center space-y-2">
+        <div class="w-6 h-6 border-2 border-brandBlue border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="text-xs font-mono text-textMuted">Invoking Llama-3.3 evaluation models on port 8001...</p>
+      </div>`;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          tech_stack: skillsArray,
+          target_role: roleText
+        })
+      });
+
+      if(!response.ok) throw new Error("API Route context offline.");
+      const data = await response.json();
+
+      targetEl.innerHTML = data.results.map(r => {
+        const sdrProgressPct = Math.min(100, Math.round((r.runway_days / 365) * 100));
+        return `
+          <div class="w-full h-full flex flex-col justify-between space-y-4 animate-fadeIn">
+            <div class="border-b border-slate-100 pb-2">
+              <div class="font-mono text-[9px] text-textMuted uppercase tracking-wider">Target Domain Role: ${roleText.toUpperCase()}</div>
+              <div class="text-base font-bold text-textDark mt-0.5">${r.tech}</div>
+            </div>
+
+            <!-- SDR -->
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-medium">
+                <span class="text-textMuted flex items-center gap-1">📊 Skill Sustainability Runway (SDR)</span>
+                <span class="text-amber-500 font-semibold font-mono">${r.runway_days} Days Safe [${r.status.toUpperCase()}]</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/40">
+                <div class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: ${sdrProgressPct}%"></div>
+              </div>
+            </div>
+
+            <!-- PECC -->
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-medium">
+                <span class="text-textMuted flex items-center gap-1">🎯 Portfolio Enterprise Shielding (PECC)</span>
+                <span class="text-emerald-500 font-semibold font-mono">${r.pecc_score}% Resilience</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/40">
+                <div class="bg-emerald-400 h-full rounded-full transition-all duration-500" style="width: ${r.pecc_score}%"></div>
+              </div>
+            </div>
+
+            <!-- UPE -->
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-medium">
+                <span class="text-textMuted flex items-center gap-1">⚙️ Capability Pivot Elasticity (UPE)</span>
+                <span class="text-brandBlue font-semibold font-mono">${r.upe_score} / 10 Adaptability</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/40">
+                <div class="bg-brandBlue h-full rounded-full transition-all duration-500" style="width: ${r.upe_score * 10}%"></div>
+              </div>
+            </div>
+
+            <!-- ROADMAP TEXT MODULE -->
+            <div class="bg-blue-50/40 border-l-2 border-brandBlue p-3 rounded-r-xl text-xs text-slate-700 bg-slate-50/50">
+              <div class="font-semibold text-textDark flex items-center gap-1 mb-1 text-brandBlue">
+                <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                <span>Llama-3.3 Corporate Strategic Roadmap</span>
+              </div>
+              <p class="leading-relaxed font-normal">${r.note}</p>
+            </div>
+          </div>
+        `;
+      }).join("");
+      lucide.createIcons();
+
+    } catch(err) {
+      targetEl.innerHTML = `
+        <div class="bg-red-50 border border-red-100 rounded-xl p-4 text-xs font-mono text-red-600 max-w-sm text-center">
+          <i data-lucide="alert-circle" class="w-5 h-5 mx-auto mb-1 text-red-500"></i>
+          <strong>Backend Handshake Failed:</strong> Local server endpoints at port 8001 are currently unreachable. Keep your backend terminal window running.
+        </div>`;
+      lucide.createIcons();
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="scan-eye" class="w-3.5 h-3.5"></i> <span>Analyze my profile</span>';
+      lucide.createIcons();
+    }
+  }
+</script>
+</body>
+</html>
