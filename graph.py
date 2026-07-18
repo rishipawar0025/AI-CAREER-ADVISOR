@@ -6,16 +6,14 @@ START -> extract_trends -> match_and_score -> END
 from typing import List, TypedDict
 from langgraph.graph import StateGraph, START, END
 
-# --- Dynamic Mock Layer (Replaces the missing 'agents' folder dependency) ---
+# --- Dynamic Mock Layer ---
 def get_market_trends(tech: str):
-    # Mock market signal tracking layer
     legacy_keywords = ["excel basic", "data entry", "jquery", "cold calling", "manual filing"]
     if any(l in tech.lower() for l in legacy_keywords):
         return {"emerging_replacement": "AI-Driven Automation"}
     return None
 
 def compute_sdr(user_stack: List[str]):
-    # Mock calculation logic tracking layer
     results = []
     for tech in user_stack:
         results.append({
@@ -47,11 +45,16 @@ def match_and_score_node(state: SDRState) -> SDRState:
 
 def build_sdr_graph():
     graph = StateGraph(SDRState)
+    
+    # Nodes add kiye
     graph.add_node("extract_trends", extract_trends_node)
     graph.add_node("match_and_score", match_and_score_node)
+    
+    # 🌟 Edges fix kar diye (String parameters properly matching nodes now)
     graph.add_edge(START, "extract_trends")
-    graph.add_edge(extract_trends, "match_and_score")
-    graph.add_edge(match_and_score, END)
+    graph.add_edge("extract_trends", "match_and_score")
+    graph.add_edge("match_and_score", END)
+    
     return graph.compile()
 
 # Compiled once at import time and reused across requests.
