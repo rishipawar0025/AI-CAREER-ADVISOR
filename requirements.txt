@@ -7,3 +7,4 @@ langchain-groq
 httpx
 pypdf
 docx2txt
+python-multipart
