@@ -5,3 +5,5 @@ langgraph>=0.1.0
 langchain-core
 langchain-groq
 httpx
+pypdf
+docx2txt
