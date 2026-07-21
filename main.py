@@ -21,11 +21,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Model change kar rahe hain DeepSeek-R1 distil model par (High Reasoning & Long Output)
+# Added max_tokens=2048 so the LLM never truncates or sends short text
 llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="deepseek-r1-distill-llama-70b", # Deep Intelligence & Long Reasoning
-    temperature=0.3
+    model_name="llama-3.3-70b-versatile",
+    temperature=0.3,
+    max_tokens=2048
 )
 
 def extract_text_from_file(file: UploadFile) -> str:
@@ -75,41 +76,41 @@ def analyze_skills_pipeline(
     else:
         raise HTTPException(status_code=400, detail="Please upload a resume file or enter details manually.")
 
-  prompt = f"""
+    prompt = f"""
     You are an elite Executive Career Auditor & AI Skill Gap Strategist.
-    Perform an IN-DEPTH, COMPREHENSIVE, AND DETAILED skill audit for the profile provided below.
+    Perform an EXTREMELY DETAILED, HIGHLY SPECIFIC, AND COMPREHENSIVE career audit on the provided candidate profile.
 
     {analysis_context}
 
-    STRICT OUTPUT GUIDELINES:
-    1. Base all conclusions 100% on the primary data source above.
-    2. Provide an EXTENSIVE, RICH, AND HIGHLY DETAILED roadmap note. Do NOT summarize or shorten sections. 
-    3. Include complete technical frameworks, specific tools, architectures, and deep execution strategies.
+    STRICT INSTRUCTIONS FOR LONG & IN-DEPTH RESPONSE:
+    1. Base all analysis strictly on the profile above.
+    2. DO NOT provide short or generic summaries. Provide an extensive advisory report in Markdown (minimum 300 words).
+    3. Be specific by naming exact modern frameworks, enterprise tools, system design concepts, and industry practices.
 
-    ROADMAP NOTE FORMATTING (Must be thorough and multi-paragraph):
+    REQUIRED MARKDOWN STRUCTURE (IN `roadmap_note`):
     
-    ### 📌 Profile Diagnosis & Industry Benchmark
-    Write a detailed 2-paragraph analysis comparing current candidate experience with modern enterprise standards.
+    ### 📌 Profile Diagnosis & Current Market Standing
+    Write a detailed 2-paragraph analysis explaining what is currently strong in the candidate's profile and where they fall short compared to top-tier enterprise industry standards.
 
     ### ⚠️ Missing Critical Skills & Architecture Vulnerabilities
-    Provide an extensive list (5 to 7 specific tools/frameworks) with explicit reasoning on why missing each tool poses a career risk.
+    List at least 5 SPECIFIC tools, libraries, or architecture paradigms missing from their profile (e.g., Docker, Kubernetes, CI/CD Actions, Redis, LangChain/LangGraph, System Design, Microservices) with reasons why each gap is critical.
 
     ### 🚀 High-Impact Technical Upskilling Roadmap
-    Provide an in-depth breakdown of concepts, cloud engineering, pipeline design, and system optimizations needed.
+    Provide an in-depth breakdown of concepts, system optimizations, and cloud engineering skills they need to acquire immediately to maximize market value.
 
     ### 🛠️ Strategic 90-Day Execution Blueprint
-    - **Month 1 (Days 1-30)**: Detailed learning tasks & hands-on modules.
-    - **Month 2 (Days 31-60)**: End-to-end production architecture project execution.
-    - **Month 3 (Days 61-90)**: Benchmarking, portfolio optimization, and interview readiness.
+    - **Month 1 (Days 1-30)**: Detailed learning objectives, specific documentation/courses, and core hands-on topics.
+    - **Month 2 (Days 31-60)**: End-to-end production project build specifications (architectures, pipelines, and integrations).
+    - **Month 3 (Days 61-90)**: Performance optimization, portfolio benchmarking, resume refactoring, and mock interview prep.
 
-    Respond STRICTLY with a valid raw JSON object (no ```json codeblock wrappers):
+    You MUST respond STRICTLY with a valid raw JSON object (no ```json formatting wrappers):
     {{
         "detected_role": "Parsed target or detected professional profile title",
         "extracted_skills": "Completely parsed current skills list",
         "runway_days": 320,
         "pecc_score": 85,
         "upe_score": 8.2,
-        "roadmap_note": "Extensive Markdown Content matching the 4 sections above"
+        "roadmap_note": "Your full, extensive, highly detailed Markdown content matching the 4 sections above"
     }}
     """
     
@@ -136,17 +137,18 @@ def analyze_skills_pipeline(
             "pecc_score": 80,
             "upe_score": 7.8,
             "roadmap_note": (
-                "### 📌 Profile Diagnosis\n"
-                "Strong foundational profile, needs modernization.\n\n"
-                "### ⚠️ Missing Critical Skills\n"
-                "• Cloud Architecture & Microservices\n"
-                "• CI/CD & Automated Pipelines\n\n"
-                "### 🚀 High-Impact Upskilling\n"
-                "Focus on Cloud Native Tools and Production AI Systems.\n\n"
-                "### 🛠️ 90-Day Execution Plan\n"
-                "• **Month 1**: Learn Cloud Architecture.\n"
-                "• **Month 2**: Build end-to-end production pipeline project.\n"
-                "• **Month 3**: Benchmark skills and apply for target roles."
+                "### 📌 Profile Diagnosis & Current Market Standing\n"
+                "Your profile exhibits strong core foundational capabilities, but lacks enterprise-grade modern automation exposure.\n\n"
+                "### ⚠️ Missing Critical Skills & Architecture Vulnerabilities\n"
+                "• Advanced System Architecture & Cloud Workflows\n"
+                "• Automated Testing & Performance Benchmarking Tools\n"
+                "• End-to-End Metrics Analytics Integration\n\n"
+                "### 🚀 High-Impact Technical Upskilling Roadmap\n"
+                "Focus on acquiring production-ready skills, cloud infrastructure automation, and real-time observability stacks.\n\n"
+                "### 🛠️ Strategic 90-Day Execution Blueprint\n"
+                "1. **Days 1-30**: Complete dedicated specialization modules in cloud integration.\n"
+                "2. **Days 31-60**: Implement an end-to-end open-source project demonstrating advanced pipeline workflows.\n"
+                "3. **Days 61-90**: Optimize system benchmarking and target strategic tech leadership roles."
             )
         }
         
