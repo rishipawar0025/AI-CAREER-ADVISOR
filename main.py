@@ -21,10 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Model change kar rahe hain DeepSeek-R1 distil model par (High Reasoning & Long Output)
 llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="llama-3.3-70b-versatile",
-    temperature=0.2
+    model_name="deepseek-r1-distill-llama-70b", # Deep Intelligence & Long Reasoning
+    temperature=0.3
 )
 
 def extract_text_from_file(file: UploadFile) -> str:
@@ -74,39 +75,41 @@ def analyze_skills_pipeline(
     else:
         raise HTTPException(status_code=400, detail="Please upload a resume file or enter details manually.")
 
-    prompt = f"""
+  prompt = f"""
     You are an elite Executive Career Auditor & AI Skill Gap Strategist.
-    Analyze the candidate's profile strictly based on the provided data below.
+    Perform an IN-DEPTH, COMPREHENSIVE, AND DETAILED skill audit for the profile provided below.
 
     {analysis_context}
 
-    STRICT RULES:
-    1. Base all conclusions 100% on the primary data source provided above.
-    2. Be extremely concise, direct, and actionable. Keep the markdown report under 150 words total.
+    STRICT OUTPUT GUIDELINES:
+    1. Base all conclusions 100% on the primary data source above.
+    2. Provide an EXTENSIVE, RICH, AND HIGHLY DETAILED roadmap note. Do NOT summarize or shorten sections. 
+    3. Include complete technical frameworks, specific tools, architectures, and deep execution strategies.
 
-    ROADMAP NOTE FORMATTING:
-    Provide concise markdown with these 4 brief sections:
+    ROADMAP NOTE FORMATTING (Must be thorough and multi-paragraph):
     
-    ### 📌 Profile Diagnosis
-    Brief 1-2 sentence overview of current standing.
+    ### 📌 Profile Diagnosis & Industry Benchmark
+    Write a detailed 2-paragraph analysis comparing current candidate experience with modern enterprise standards.
 
-    ### ⚠️ Missing Critical Skills
-    List 3-4 exact missing tools or frameworks.
+    ### ⚠️ Missing Critical Skills & Architecture Vulnerabilities
+    Provide an extensive list (5 to 7 specific tools/frameworks) with explicit reasoning on why missing each tool poses a career risk.
 
-    ### 🚀 High-Impact Upskilling
-    1-2 key tech areas to learn next.
+    ### 🚀 High-Impact Technical Upskilling Roadmap
+    Provide an in-depth breakdown of concepts, cloud engineering, pipeline design, and system optimizations needed.
 
-    ### 🛠️ 90-Day Execution Plan
-    3 short bullet points for Month 1, Month 2, and Month 3.
+    ### 🛠️ Strategic 90-Day Execution Blueprint
+    - **Month 1 (Days 1-30)**: Detailed learning tasks & hands-on modules.
+    - **Month 2 (Days 31-60)**: End-to-end production architecture project execution.
+    - **Month 3 (Days 61-90)**: Benchmarking, portfolio optimization, and interview readiness.
 
-    Respond STRICTLY with a valid raw JSON object. Do NOT use markdown code blocks like ```json:
+    Respond STRICTLY with a valid raw JSON object (no ```json codeblock wrappers):
     {{
-        "detected_role": "Detected Job Title",
-        "extracted_skills": "Key Skills Parsed",
+        "detected_role": "Parsed target or detected professional profile title",
+        "extracted_skills": "Completely parsed current skills list",
         "runway_days": 320,
         "pecc_score": 85,
         "upe_score": 8.2,
-        "roadmap_note": "Concise Markdown Content"
+        "roadmap_note": "Extensive Markdown Content matching the 4 sections above"
     }}
     """
     
