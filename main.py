@@ -21,7 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
     model_name="llama-3.3-70b-versatile",
@@ -43,7 +42,6 @@ def extract_text_from_file(file: UploadFile) -> str:
     except Exception:
         return ""
 
-# Root Route (Render Health-Check & Handshake Fix)
 @app.get("/")
 def read_root():
     return {
@@ -65,23 +63,25 @@ def analyze_skills_pipeline(
     if resume and resume.filename != "":
         resume_extracted_text = extract_text_from_file(resume)
 
-    # Intelligent Analysis Instruction Prompt
+    user_manual_input = manual_text.strip() if manual_text else ""
+
+    # Clear instructions based on whether resume is present or not
     prompt = f"""
-    You are an expert AI Career Strategy Advisor. Analyze the user profiles based on these inputs:
+    You are an expert AI Career Strategy Advisor. Analyze the user profile based on these inputs:
     
     1. UPLOADED RESUME TEXT: \"\"\"{resume_extracted_text}\"\"\"
-    2. MANUAL USER FORM INPUT: \"\"\"{manual_text if manual_text else ''}\"\"\"
+    2. MANUAL USER FORM INPUT: \"\"\"{user_manual_input}\"\"\"
     
     STRICT COMPLIANCE DIRECTIONS:
-    - If the uploaded resume text contains dense technical details (e.g., Deep Learning, AI/ML, Computer Vision, Software Development) and contradicts the manual text keywords, the UPLOADED RESUME has 90% priority weight.
-    - AUTOMATIC POSITION DETECTION: Identify the core professional profile or domain from the resume context (e.g., "AI/ML Engineer", "Technical Program Manager", "Full Stack Developer"). Do not default to manual inputs if the resume explicitly points to a different high-skill career track.
+    - IF RESUME IS PROVIDED AND NOT EMPTY: The uploaded resume has 90% priority weight. Detect the core professional profile from the resume context.
+    - IF NO RESUME IS PROVIDED (Empty Resume Text): Strictly base your analysis on the MANUAL USER FORM INPUT ("{user_manual_input}"). Do NOT invent or default to AI/ML, Software Engineering, or any other role unless explicitly written in the input.
     
     Calculate the following metrics based on the domain match stability:
     - runway_days: Score from 90 to 365 based on skill sustainability.
     - pecc_score: Resilience protection score percentage (value between 50 and 99).
     - upe_score: Capability pivot elasticity score (value between 1.0 and 10.0).
     
-    You MUST respond with a VALID JSON object containing exactly these fields. Do not include markdown code blocks or text outside the JSON.
+    You MUST respond strictly with a valid JSON object (no markdown, no code fencing ```json):
     {{
         "detected_role": "Extracted target profile title here",
         "extracted_skills": "Core technical tools parsed from profile",
@@ -92,21 +92,20 @@ def analyze_skills_pipeline(
     }}
     """
     
-    response = llm.invoke([HumanMessage(content=prompt)])
-    
     try:
-        # Clean response string if LLM appends markdown tags
+        response = llm.invoke([HumanMessage(content=prompt)])
         clean_content = response.content.strip().replace("```json", "").replace("```", "").strip()
         ai_data = json.loads(clean_content)
     except Exception:
-        # Emergency structured fallback framework if JSON structure fails parsing
+        # Dynamic Emergency Fallback (Prevents forced AI/ML default)
+        fallback_role = user_manual_input if user_manual_input else "UI/UX & Product Designer"
         ai_data = {
-            "detected_role": "AI/ML Engineering Specialist",
-            "extracted_skills": "Deep Learning, Computer Vision, AI Models",
-            "runway_days": 365,
-            "pecc_score": 90,
-            "upe_score": 9.2,
-            "roadmap_note": "Focus on emerging production architectures like Explainable AI and Edge systems while leveraging your core strengths."
+            "detected_role": fallback_role,
+            "extracted_skills": "Core Domain Competencies & Industry Tools",
+            "runway_days": 280,
+            "pecc_score": 82,
+            "upe_score": 8.0,
+            "roadmap_note": f"Strengthen core execution methodologies and toolings specifically tailored for {fallback_role} tracks."
         }
         
     # Trigger LangGraph verification pipeline
