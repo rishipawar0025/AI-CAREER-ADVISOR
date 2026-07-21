@@ -9,7 +9,7 @@ from langchain_core.messages import HumanMessage
 import pypdf
 import docx2txt
 
-from graph import run_sdr_pipeline  
+from graph import run_sdr_pipeline
 
 app = FastAPI(title="SkillRadar AI - Universal Corporate Analytics API", version="2.0.0")
 
@@ -23,7 +23,7 @@ app.add_middleware(
 
 llm = ChatGroq(
     model_name="llama-3.3-70b-versatile",
-    temperature=0.2  
+    temperature=0.2
 )
 
 def extract_text_from_file(file: UploadFile) -> str:
@@ -40,6 +40,19 @@ def extract_text_from_file(file: UploadFile) -> str:
         return ""
     except Exception:
         return ""
+
+# Root Route (Render Health-Check & Handshake Fix)
+@app.get("/")
+def read_root():
+    return {
+        "status": "online",
+        "service": "SkillRadar AI API",
+        "docs_url": "/docs"
+    }
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 @app.post("/analyze")
 def analyze_skills_pipeline(
