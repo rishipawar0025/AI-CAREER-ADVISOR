@@ -81,37 +81,32 @@ def analyze_skills_pipeline(
     {analysis_context}
 
     STRICT RULES:
-    1. Base all conclusions 100% on the primary data source above.
-    2. Identify exact missing technical tools, domain competencies, and execution gaps required for their target market profile.
+    1. Base all conclusions 100% on the primary data source provided above.
+    2. Be extremely concise, direct, and actionable. Keep the markdown report under 150 words total.
+
+    ROADMAP NOTE FORMATTING:
+    Provide concise markdown with these 4 brief sections:
     
-    METRICS CALCULATION:
-    - runway_days: 90 to 365 (Market relevance durability score).
-    - pecc_score: 50 to 99 (% protection against automated tools & outsourcing).
-    - upe_score: 1.0 to 10.0 (Adaptability to pivot across adjacent technical domains).
+    ### 📌 Profile Diagnosis
+    Brief 1-2 sentence overview of current standing.
 
-    ROADMAP NOTE REQUIREMENTS:
-    You MUST provide an IN-DEPTH, MULTI-PARAGRAPH STRATEGIC ADVISORY REPORT in markdown format (At least 250-300 words). Include the following sections:
-    
-    ### 📌 Profile Diagnosis & Current Standing
-    Detailed breakdown of what is currently present vs what the industry benchmark demands.
+    ### ⚠️ Missing Critical Skills
+    List 3-4 exact missing tools or frameworks.
 
-    ### ⚠️ Missing Critical Skills & Vulnerabilities
-    Explicitly name 3 to 5 key tools, frameworks, or domain skills that are missing and posing high career risk.
+    ### 🚀 High-Impact Upskilling
+    1-2 key tech areas to learn next.
 
-    ### 🚀 High-Impact Upskilling Roadmap
-    A structured plan detailing exactly what concepts, certifications, or technologies to learn next to bridge the identified gap.
+    ### 🛠️ 90-Day Execution Plan
+    3 short bullet points for Month 1, Month 2, and Month 3.
 
-    ### 🛠️ Strategic 90-Day Execution Advice
-    Actionable step-by-step guidance to instantly increase market readiness and resilience.
-
-    You MUST respond STRICTLY with a valid JSON object (no raw text outside JSON, no ```json formatting):
+    Respond STRICTLY with a valid raw JSON object. Do NOT use markdown code blocks like ```json:
     {{
-        "detected_role": "Parsed target or detected professional profile title",
-        "extracted_skills": "Completely parsed current skills list",
+        "detected_role": "Detected Job Title",
+        "extracted_skills": "Key Skills Parsed",
         "runway_days": 320,
         "pecc_score": 85,
         "upe_score": 8.2,
-        "roadmap_note": "Markdown content containing the 4 detailed sections requested above."
+        "roadmap_note": "Concise Markdown Content"
     }}
     """
     
@@ -138,18 +133,17 @@ def analyze_skills_pipeline(
             "pecc_score": 80,
             "upe_score": 7.8,
             "roadmap_note": (
-                "### 📌 Profile Diagnosis & Current Standing\n"
-                "Your profile exhibits strong core foundational capabilities, but lacks enterprise-grade modern automation exposure.\n\n"
-                "### ⚠️ Missing Critical Skills & Vulnerabilities\n"
-                "• Advanced System Architecture & Cloud Workflows\n"
-                "• Automated Testing & Performance Benchmarking Tools\n"
-                "• End-to-End Metrics Analytics Integration\n\n"
-                "### 🚀 High-Impact Upskilling Roadmap\n"
-                "Focus on acquiring production-ready skills, cloud infrastructure automation, and real-time observability stacks.\n\n"
-                "### 🛠️ Strategic 90-Day Execution Advice\n"
-                "1. **Days 1-30**: Complete dedicated specialization modules in cloud integration.\n"
-                "2. **Days 31-60**: Implement an end-to-end open-source project demonstrating advanced pipeline workflows.\n"
-                "3. **Days 61-90**: Optimize system benchmarking and target strategic tech leadership roles."
+                "### 📌 Profile Diagnosis\n"
+                "Strong foundational profile, needs modernization.\n\n"
+                "### ⚠️ Missing Critical Skills\n"
+                "• Cloud Architecture & Microservices\n"
+                "• CI/CD & Automated Pipelines\n\n"
+                "### 🚀 High-Impact Upskilling\n"
+                "Focus on Cloud Native Tools and Production AI Systems.\n\n"
+                "### 🛠️ 90-Day Execution Plan\n"
+                "• **Month 1**: Learn Cloud Architecture.\n"
+                "• **Month 2**: Build end-to-end production pipeline project.\n"
+                "• **Month 3**: Benchmark skills and apply for target roles."
             )
         }
         
