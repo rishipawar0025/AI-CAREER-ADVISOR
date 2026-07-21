@@ -59,17 +59,20 @@ def analyze_skills_pipeline(
     resume: Optional[UploadFile] = File(None),
     manual_text: Optional[str] = Form(None)
 ):
-    resume_extracted_text = ""
-    if resume and resume.filename != "":
-        resume_extracted_text = extract_text_from_file(resume)
-
     user_manual_input = manual_text.strip() if manual_text else ""
+    is_file_uploaded = resume is not None and resume.filename != ""
 
-    # STRICT XOR LOGIC: Either Resume OR Manual Form (100% Mutual Exclusion)
-    if resume_extracted_text:
+    # STRICT PRIORITY ENGINE: File Upload ALWAYS Overrides Manual Text
+    if is_file_uploaded:
+        resume_extracted_text = extract_text_from_file(resume)
+        if not resume_extracted_text:
+            resume_extracted_text = f"Uploaded document filename: {resume.filename}. Candidate resume content provided."
+            
         analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME ONLY.\n\nRESUME CONTENT:\n{resume_extracted_text}"
-    else:
+    elif user_manual_input:
         analysis_context = f"PRIMARY DATA SOURCE: USER MANUAL FORM INPUT ONLY.\n\nFORM INPUT:\n{user_manual_input}"
+    else:
+        raise HTTPException(status_code=400, detail="Please upload a resume file or enter details manually.")
 
     prompt = f"""
     You are an elite Executive Career Auditor & AI Skill Gap Strategist.
@@ -117,7 +120,7 @@ def analyze_skills_pipeline(
         clean_content = response.content.strip().replace("```json", "").replace("```", "").strip()
         ai_data = json.loads(clean_content)
     except Exception:
-        fallback_role = user_manual_input if user_manual_input else "Corporate & Tech Professional"
+        fallback_role = user_manual_input if (user_manual_input and not is_file_uploaded) else "Corporate & Tech Professional"
         ai_data = {
             "detected_role": fallback_role,
             "extracted_skills": "Core Domain Competencies & System Tools",
