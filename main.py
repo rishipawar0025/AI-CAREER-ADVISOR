@@ -117,9 +117,19 @@ def analyze_skills_pipeline(
     
     try:
         response = llm.invoke([HumanMessage(content=prompt)])
-        clean_content = response.content.strip().replace("```json", "").replace("```", "").strip()
+        raw_text = response.content.strip()
+
+        # Clean markdown wrappers if returned by LLM
+        if "```json" in raw_text:
+            clean_content = raw_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in raw_text:
+            clean_content = raw_text.split("```")[1].split("```")[0].strip()
+        else:
+            clean_content = raw_text
+
         ai_data = json.loads(clean_content)
-    except Exception:
+    except Exception as e:
+        print(f"❌ GROQ LLM EXCEPTION: {str(e)}")
         fallback_role = user_manual_input if (user_manual_input and not is_file_uploaded) else "Corporate & Tech Professional"
         ai_data = {
             "detected_role": fallback_role,
