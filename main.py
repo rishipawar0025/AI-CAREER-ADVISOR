@@ -65,30 +65,50 @@ def analyze_skills_pipeline(
 
     user_manual_input = manual_text.strip() if manual_text else ""
 
-    # Clear instructions based on whether resume is present or not
+    # STRICT XOR LOGIC: Either Resume OR Manual Form (100% Mutual Exclusion)
+    if resume_extracted_text:
+        analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME ONLY.\n\nRESUME CONTENT:\n{resume_extracted_text}"
+    else:
+        analysis_context = f"PRIMARY DATA SOURCE: USER MANUAL FORM INPUT ONLY.\n\nFORM INPUT:\n{user_manual_input}"
+
     prompt = f"""
-    You are an expert AI Career Strategy Advisor. Analyze the user profile based on these inputs:
+    You are an elite Executive Career Auditor & AI Skill Gap Strategist.
+    Analyze the candidate's profile strictly based on the provided data below.
+
+    {analysis_context}
+
+    STRICT RULES:
+    1. Base all conclusions 100% on the primary data source above.
+    2. Identify exact missing technical tools, domain competencies, and execution gaps required for their target market profile.
     
-    1. UPLOADED RESUME TEXT: \"\"\"{resume_extracted_text}\"\"\"
-    2. MANUAL USER FORM INPUT: \"\"\"{user_manual_input}\"\"\"
+    METRICS CALCULATION:
+    - runway_days: 90 to 365 (Market relevance durability score).
+    - pecc_score: 50 to 99 (% protection against automated tools & outsourcing).
+    - upe_score: 1.0 to 10.0 (Adaptability to pivot across adjacent technical domains).
+
+    ROADMAP NOTE REQUIREMENTS:
+    You MUST provide an IN-DEPTH, MULTI-PARAGRAPH STRATEGIC ADVISORY REPORT in markdown format (At least 250-300 words). Include the following sections:
     
-    STRICT COMPLIANCE DIRECTIONS:
-    - IF RESUME IS PROVIDED AND NOT EMPTY: The uploaded resume has 90% priority weight. Detect the core professional profile from the resume context.
-    - IF NO RESUME IS PROVIDED (Empty Resume Text): Strictly base your analysis on the MANUAL USER FORM INPUT ("{user_manual_input}"). Do NOT invent or default to AI/ML, Software Engineering, or any other role unless explicitly written in the input.
-    
-    Calculate the following metrics based on the domain match stability:
-    - runway_days: Score from 90 to 365 based on skill sustainability.
-    - pecc_score: Resilience protection score percentage (value between 50 and 99).
-    - upe_score: Capability pivot elasticity score (value between 1.0 and 10.0).
-    
-    You MUST respond strictly with a valid JSON object (no markdown, no code fencing ```json):
+    ### 📌 Profile Diagnosis & Current Standing
+    Detailed breakdown of what is currently present vs what the industry benchmark demands.
+
+    ### ⚠️ Missing Critical Skills & Vulnerabilities
+    Explicitly name 3 to 5 key tools, frameworks, or domain skills that are missing and posing high career risk.
+
+    ### 🚀 High-Impact Upskilling Roadmap
+    A structured plan detailing exactly what concepts, certifications, or technologies to learn next to bridge the identified gap.
+
+    ### 🛠️ Strategic 90-Day Execution Advice
+    Actionable step-by-step guidance to instantly increase market readiness and resilience.
+
+    You MUST respond STRICTLY with a valid JSON object (no raw text outside JSON, no ```json formatting):
     {{
-        "detected_role": "Extracted target profile title here",
-        "extracted_skills": "Core technical tools parsed from profile",
-        "runway_days": 365,
+        "detected_role": "Parsed target or detected professional profile title",
+        "extracted_skills": "Completely parsed current skills list",
+        "runway_days": 320,
         "pecc_score": 85,
-        "upe_score": 8.5,
-        "roadmap_note": "A highly sharp 2-line professional roadmap strategy advice statement."
+        "upe_score": 8.2,
+        "roadmap_note": "Markdown content containing the 4 detailed sections requested above."
     }}
     """
     
@@ -97,18 +117,29 @@ def analyze_skills_pipeline(
         clean_content = response.content.strip().replace("```json", "").replace("```", "").strip()
         ai_data = json.loads(clean_content)
     except Exception:
-        # Dynamic Emergency Fallback (Prevents forced AI/ML default)
-        fallback_role = user_manual_input if user_manual_input else "UI/UX & Product Designer"
+        fallback_role = user_manual_input if user_manual_input else "Corporate & Tech Professional"
         ai_data = {
             "detected_role": fallback_role,
-            "extracted_skills": "Core Domain Competencies & Industry Tools",
-            "runway_days": 280,
-            "pecc_score": 82,
-            "upe_score": 8.0,
-            "roadmap_note": f"Strengthen core execution methodologies and toolings specifically tailored for {fallback_role} tracks."
+            "extracted_skills": "Core Domain Competencies & System Tools",
+            "runway_days": 270,
+            "pecc_score": 80,
+            "upe_score": 7.8,
+            "roadmap_note": (
+                "### 📌 Profile Diagnosis & Current Standing\n"
+                "Your profile exhibits strong core foundational capabilities, but lacks enterprise-grade modern automation exposure.\n\n"
+                "### ⚠️ Missing Critical Skills & Vulnerabilities\n"
+                "• Advanced System Architecture & Cloud Workflows\n"
+                "• Automated Testing & Performance Benchmarking Tools\n"
+                "• End-to-End Metrics Analytics Integration\n\n"
+                "### 🚀 High-Impact Upskilling Roadmap\n"
+                "Focus on acquiring production-ready skills, cloud infrastructure automation, and real-time observability stacks.\n\n"
+                "### 🛠️ Strategic 90-Day Execution Advice\n"
+                "1. **Days 1-30**: Complete dedicated specialization modules in cloud integration.\n"
+                "2. **Days 31-60**: Implement an end-to-end open-source project demonstrating advanced pipeline workflows.\n"
+                "3. **Days 61-90**: Optimize system benchmarking and target strategic tech leadership roles."
+            )
         }
         
-    # Trigger LangGraph verification pipeline
     graph_result = run_sdr_pipeline([ai_data["detected_role"]])
     
     return {
