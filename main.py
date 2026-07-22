@@ -76,41 +76,45 @@ def analyze_skills_pipeline(
     else:
         raise HTTPException(status_code=400, detail="Please upload a resume file or enter details manually.")
 
-    prompt = f"""
-    You are an elite Executive Career Auditor & AI Skill Gap Strategist.
-    Perform an EXTREMELY DETAILED, HIGHLY SPECIFIC, AND COMPREHENSIVE career audit on the provided candidate profile.
+  prompt = f"""
+    You are an uncensored, elite Executive Career Auditor & AI Reality-Check Strategist.
+    Analyze the provided Candidate Profile against the Target Role.
 
     {analysis_context}
 
-    STRICT INSTRUCTIONS FOR LONG & IN-DEPTH RESPONSE:
-    1. Base all analysis strictly on the profile above.
-    2. DO NOT provide short or generic summaries. Provide an extensive advisory report in Markdown (minimum 300 words).
-    3. Be specific by naming exact modern frameworks, enterprise tools, system design concepts, and industry practices.
+    CRITICAL REALITY-CHECK PROTOCOL:
+    1. DOMAIN MISMATCH EVALUATION:
+       - Compare the candidate's current skills against the Target Role.
+       - IF THERE IS A SEVERE MISMATCH (e.g., HR/Talent Acquisition skills provided for a UX/UI or Software Engineering role):
+         a) DO NOT force a polite roadmap or fake validation.
+         b) Give a direct, brutal REALITY CHECK in the "Profile Diagnosis". Clearly state: "Your current skill stack has 0% functional overlap with this Target Role."
+         c) DROP the scores significantly (e.g., Runway Days < 120, PECC Shielding < 30%).
+         d) Explicitly list all missing core foundational skills required for the Target Role.
 
-    REQUIRED MARKDOWN STRUCTURE (IN `roadmap_note`):
+    2. ROADMAP NOTE STRUCTURE (IN MARKDOWN):
     
-    ### 📌 Profile Diagnosis & Current Market Standing
-    Write a detailed 2-paragraph analysis explaining what is currently strong in the candidate's profile and where they fall short compared to top-tier enterprise industry standards.
+    ### 📌 Reality Check & Profile Diagnosis
+    Direct, honest 2-paragraph evaluation explaining the actual gap between current skills and target role expectations.
 
-    ### ⚠️ Missing Critical Skills & Architecture Vulnerabilities
-    List at least 5 SPECIFIC tools, libraries, or architecture paradigms missing from their profile (e.g., Docker, Kubernetes, CI/CD Actions, Redis, LangChain/LangGraph, System Design, Microservices) with reasons why each gap is critical.
+    ### ⚠️ High-Risk Skill Gaps & Critical Flaws
+    List 5 to 7 mandatory tools/frameworks missing for the target role and why the current skill stack is ineffective.
 
-    ### 🚀 High-Impact Technical Upskilling Roadmap
-    Provide an in-depth breakdown of concepts, system optimizations, and cloud engineering skills they need to acquire immediately to maximize market value.
+    ### 🚀 Essential Upskilling & Transition Roadmap
+    Clear breakdown of what core technologies/tools must be learned from ground zero.
 
-    ### 🛠️ Strategic 90-Day Execution Blueprint
-    - **Month 1 (Days 1-30)**: Detailed learning objectives, specific documentation/courses, and core hands-on topics.
-    - **Month 2 (Days 31-60)**: End-to-end production project build specifications (architectures, pipelines, and integrations).
-    - **Month 3 (Days 61-90)**: Performance optimization, portfolio benchmarking, resume refactoring, and mock interview prep.
+    ### 🛠️ Strategic 90-Day Transition Blueprint
+    - **Month 1 (Days 1-30)**: Ground-zero fundamentals of the new target role.
+    - **Month 2 (Days 31-60)**: Core tool mastery & beginner-to-intermediate execution.
+    - **Month 3 (Days 61-90)**: Industry portfolio project & market repositioning.
 
-    You MUST respond STRICTLY with a valid raw JSON object (no ```json formatting wrappers):
+    Respond STRICTLY with a valid raw JSON object (no ```json formatting wrappers):
     {{
-        "detected_role": "Parsed target or detected professional profile title",
-        "extracted_skills": "Completely parsed current skills list",
-        "runway_days": 320,
-        "pecc_score": 85,
-        "upe_score": 8.2,
-        "roadmap_note": "Your full, extensive, highly detailed Markdown content matching the 4 sections above"
+        "detected_role": "Target Role Name",
+        "extracted_skills": "Parsed Current Skills vs Target Role Gaps",
+        "runway_days": 90,
+        "pecc_score": 35,
+        "upe_score": 4.2,
+        "roadmap_note": "Your full Markdown content following the 4 sections above"
     }}
     """
     
