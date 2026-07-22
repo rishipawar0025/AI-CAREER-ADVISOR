@@ -76,13 +76,14 @@ def analyze_skills_pipeline(
     user_manual_input = manual_text.strip() if manual_text else ""
     is_file_uploaded = resume is not None and resume.filename != ""
 
+    # STRICT PRIORITY ENGINE: File Upload ALWAYS Overrides Manual Input Completely
     if is_file_uploaded:
         resume_extracted_text = extract_text_from_file(resume)
         if not resume_extracted_text:
             resume_extracted_text = f"Uploaded document: {resume.filename}."
-        analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME CONTENT:\n{resume_extracted_text}"
-        if user_manual_input:
-            analysis_context += f"\n\nADDITIONAL TARGET CONTEXT:\n{user_manual_input}"
+        
+        # Manual text is explicitly IGNORED when file is attached
+        analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME CONTENT ONLY:\n{resume_extracted_text}"
     elif user_manual_input:
         analysis_context = f"PRIMARY DATA SOURCE: FORM INPUT ONLY:\n{user_manual_input}"
     else:
@@ -125,7 +126,7 @@ def analyze_skills_pipeline(
             print(f"❌ GROQ LLM EXCEPTION LOG: {str(e)}")
 
     if not ai_data:
-        target_role = user_manual_input if user_manual_input else "Target Role"
+        target_role = "Target Role Profile"
         ai_data = {
             "detected_role": target_role,
             "extracted_skills": "Core Industry Tools & Competencies",
