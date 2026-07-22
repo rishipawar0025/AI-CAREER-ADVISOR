@@ -1,6 +1,7 @@
 import os
 import io
 import json
+import re
 from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,18 +22,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Added max_tokens=2048 so the LLM never truncates or sends short text
-llm = ChatGroq(
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="llama-3.3-70b-versatile",
-    temperature=0.3,
-    max_tokens=2048
-)
+groq_key = os.getenv("GROQ_API_KEY")
+
+def get_llm():
+    if not groq_key:
+        return None
+    return ChatGroq(
+        groq_api_key=groq_key,
+        model_name="llama-3.3-70b-versatile",
+        temperature=0.2,
+        max_tokens=2048
+    )
 
 def extract_text_from_file(file: UploadFile) -> str:
     filename = file.filename.lower()
-    file_bytes = file.file.read()
     try:
+        file.file.seek(0)
+        file_bytes = file.file.read()
         if filename.endswith('.pdf'):
             pdf_reader = pypdf.PdfReader(io.BytesIO(file_bytes))
             return "".join([page.extract_text() or "" for page in pdf_reader.pages]).strip()
@@ -41,16 +47,13 @@ def extract_text_from_file(file: UploadFile) -> str:
         elif filename.endswith('.txt') or filename.endswith('.md'):
             return file_bytes.decode('utf-8').strip()
         return ""
-    except Exception:
+    except Exception as e:
+        print(f"File Read Exception: {e}")
         return ""
 
 @app.get("/")
 def read_root():
-    return {
-        "status": "online",
-        "service": "SkillRadar AI API",
-        "docs_url": "/docs"
-    }
+    return {"status": "online", "service": "SkillRadar AI API"}
 
 @app.get("/health")
 def health_check():
@@ -64,111 +67,105 @@ def analyze_skills_pipeline(
     user_manual_input = manual_text.strip() if manual_text else ""
     is_file_uploaded = resume is not None and resume.filename != ""
 
-    # STRICT PRIORITY ENGINE: File Upload ALWAYS Overrides Manual Text
     if is_file_uploaded:
         resume_extracted_text = extract_text_from_file(resume)
         if not resume_extracted_text:
-            resume_extracted_text = f"Uploaded document filename: {resume.filename}. Candidate resume content provided."
-            
-        analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME ONLY.\n\nRESUME CONTENT:\n{resume_extracted_text}"
+            resume_extracted_text = f"Uploaded document: {resume.filename}."
+        analysis_context = f"PRIMARY DATA SOURCE: UPLOADED RESUME CONTENT:\n{resume_extracted_text}"
+        if user_manual_input:
+            analysis_context += f"\n\nADDITIONAL TARGET CONTEXT:\n{user_manual_input}"
     elif user_manual_input:
-        analysis_context = f"PRIMARY DATA SOURCE: USER MANUAL FORM INPUT ONLY.\n\nFORM INPUT:\n{user_manual_input}"
+        analysis_context = f"PRIMARY DATA SOURCE: FORM INPUT ONLY:\n{user_manual_input}"
     else:
         raise HTTPException(status_code=400, detail="Please upload a resume file or enter details manually.")
 
-  prompt = f"""
-    You are an uncensored, elite Executive Career Auditor & AI Reality-Check Strategist.
-    Analyze the provided Candidate Profile against the Target Role.
+    prompt = f"""
+You are an elite, uncensored Executive Career Auditor & AI Reality-Check Strategist.
+Analyze the candidate's provided profile strictly against their target role domain.
 
-    {analysis_context}
+{analysis_context}
 
-    CRITICAL REALITY-CHECK PROTOCOL:
-    1. DOMAIN MISMATCH EVALUATION:
-       - Compare the candidate's current skills against the Target Role.
-       - IF THERE IS A SEVERE MISMATCH (e.g., HR/Talent Acquisition skills provided for a UX/UI or Software Engineering role):
-         a) DO NOT force a polite roadmap or fake validation.
-         b) Give a direct, brutal REALITY CHECK in the "Profile Diagnosis". Clearly state: "Your current skill stack has 0% functional overlap with this Target Role."
-         c) DROP the scores significantly (e.g., Runway Days < 120, PECC Shielding < 30%).
-         d) Explicitly list all missing core foundational skills required for the Target Role.
+REALITY-CHECK EVALUATION RULES:
+1. Compare current skills vs target role expectations.
+2. If there is a severe mismatch (e.g., HR/Talent Acquisition background applied for a UX/UI or Developer role), do NOT force fake validation. Clearly state in the diagnosis that there is 0% domain overlap.
+3. Drop scores accordingly (Mismatch = Runway < 120 days, PECC < 40%).
+4. Provide an extensive, highly actionable markdown report (minimum 250 words).
 
-    2. ROADMAP NOTE STRUCTURE (IN MARKDOWN):
+REQUIRED MARKDOWN SECTIONS (Inside `roadmap_note`):
+### 📌 Profile Reality-Check & Diagnosis
+A clear, honest 2-paragraph evaluation comparing candidate tools with modern industry benchmarks for this specific role.
+
+### ⚠️ Critical Missing Skills & Domain Vulnerabilities
+List 4 to 6 exact missing tools, libraries, design paradigms, or frameworks necessary for this target role.
+
+### 🚀 High-Impact Technical & Domain Upskilling Roadmap
+Specific modern workflows, tools, and practices to master immediately.
+
+### 🛠️ Strategic 90-Day Execution Blueprint
+- **Month 1 (Days 1-30)**: Ground-zero foundational mastery.
+- **Month 2 (Days 31-60)**: Build 2 production-grade domain projects.
+- **Month 3 (Days 61-90)**: Portfolio refactoring, market benchmarking, and mock interviews.
+
+Return STRICTLY a raw valid JSON object (no ```json codeblock formatting):
+{{
+    "detected_role": "Detected Target Role Title",
+    "extracted_skills": "Parsed skills list matching the domain",
+    "runway_days": 280,
+    "pecc_score": 75,
+    "upe_score": 7.0,
+    "roadmap_note": "Your full Markdown report matching the 4 sections above."
+}}
+"""
     
-    ### 📌 Reality Check & Profile Diagnosis
-    Direct, honest 2-paragraph evaluation explaining the actual gap between current skills and target role expectations.
+    ai_data = None
+    llm = get_llm()
 
-    ### ⚠️ High-Risk Skill Gaps & Critical Flaws
-    List 5 to 7 mandatory tools/frameworks missing for the target role and why the current skill stack is ineffective.
+    if llm:
+        try:
+            response = llm.invoke([HumanMessage(content=prompt)])
+            raw_text = response.content.strip()
 
-    ### 🚀 Essential Upskilling & Transition Roadmap
-    Clear breakdown of what core technologies/tools must be learned from ground zero.
+            json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+            if json_match:
+                ai_data = json.loads(json_match.group(0))
+        except Exception as e:
+            print(f"❌ GROQ LLM EXCEPTION LOG: {str(e)}")
 
-    ### 🛠️ Strategic 90-Day Transition Blueprint
-    - **Month 1 (Days 1-30)**: Ground-zero fundamentals of the new target role.
-    - **Month 2 (Days 31-60)**: Core tool mastery & beginner-to-intermediate execution.
-    - **Month 3 (Days 61-90)**: Industry portfolio project & market repositioning.
-
-    Respond STRICTLY with a valid raw JSON object (no ```json formatting wrappers):
-    {{
-        "detected_role": "Target Role Name",
-        "extracted_skills": "Parsed Current Skills vs Target Role Gaps",
-        "runway_days": 90,
-        "pecc_score": 35,
-        "upe_score": 4.2,
-        "roadmap_note": "Your full Markdown content following the 4 sections above"
-    }}
-    """
-    
-    try:
-        response = llm.invoke([HumanMessage(content=prompt)])
-        raw_text = response.content.strip()
-
-        # Clean markdown wrappers if returned by LLM
-        if "```json" in raw_text:
-            clean_content = raw_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in raw_text:
-            clean_content = raw_text.split("```")[1].split("```")[0].strip()
-        else:
-            clean_content = raw_text
-
-        ai_data = json.loads(clean_content)
-    except Exception as e:
-        print(f"❌ GROQ LLM EXCEPTION: {str(e)}")
-        fallback_role = user_manual_input if (user_manual_input and not is_file_uploaded) else "Corporate & Tech Professional"
+    if not ai_data:
+        target_role = user_manual_input if user_manual_input else "Target Role"
         ai_data = {
-            "detected_role": fallback_role,
-            "extracted_skills": "Core Domain Competencies & System Tools",
-            "runway_days": 270,
-            "pecc_score": 80,
-            "upe_score": 7.8,
+            "detected_role": target_role,
+            "extracted_skills": "Core Industry Tools & Competencies",
+            "runway_days": 180,
+            "pecc_score": 60,
+            "upe_score": 6.5,
             "roadmap_note": (
-                "### 📌 Profile Diagnosis & Current Market Standing\n"
-                "Your profile exhibits strong core foundational capabilities, but lacks enterprise-grade modern automation exposure.\n\n"
-                "### ⚠️ Missing Critical Skills & Architecture Vulnerabilities\n"
-                "• Advanced System Architecture & Cloud Workflows\n"
-                "• Automated Testing & Performance Benchmarking Tools\n"
-                "• End-to-End Metrics Analytics Integration\n\n"
-                "### 🚀 High-Impact Technical Upskilling Roadmap\n"
-                "Focus on acquiring production-ready skills, cloud infrastructure automation, and real-time observability stacks.\n\n"
-                "### 🛠️ Strategic 90-Day Execution Blueprint\n"
-                "1. **Days 1-30**: Complete dedicated specialization modules in cloud integration.\n"
-                "2. **Days 31-60**: Implement an end-to-end open-source project demonstrating advanced pipeline workflows.\n"
-                "3. **Days 61-90**: Optimize system benchmarking and target strategic tech leadership roles."
+                f"### 📌 Profile Reality-Check & Diagnosis\n"
+                f"⚠️ **Live Groq LLM API Call Failed or Invalid Key.**\n\n"
+                f"Evaluation for **{target_role}** requires an active Groq API handshake. Please verify `GROQ_API_KEY` on Render.\n\n"
+                f"### ⚠️ Critical Missing Skills & Domain Vulnerabilities\n"
+                f"• Missing live API connection to Groq Llama 3.3 pipeline.\n\n"
+                f"### 🚀 High-Impact Technical & Domain Upskilling Roadmap\n"
+                f"Ensure your Render web service environment variable `GROQ_API_KEY` is configured correctly.\n\n"
+                f"### 🛠️ Strategic 90-Day Execution Blueprint\n"
+                f"• **Step 1**: Check Render logs for exact exception trace.\n"
+                f"• **Step 2**: Re-deploy backend on Render."
             )
         }
         
     graph_result = run_sdr_pipeline([ai_data["detected_role"]])
     
     return {
-        "trend_notes": graph_result.get("trend_notes", "Stable pipeline deployment"),
+        "trend_notes": graph_result.get("trend_notes", "Pipeline operational"),
         "results": [
             {
-                "tech": ai_data.get("extracted_skills", "Core Profile Infrastructure Stack"),
-                "detected_title": ai_data.get("detected_role", "Detected Profile Lead"),
-                "runway_days": ai_data.get("runway_days", 365),
-                "status": "watch" if ai_data.get("runway_days", 365) < 180 else "healthy",
-                "pecc_score": ai_data.get("pecc_score", 80),
-                "upe_score": ai_data.get("upe_score", 8.0),
-                "note": ai_data.get("roadmap_note", "Continue active capability upskilling tracks.")
+                "tech": ai_data.get("extracted_skills", "Core Skill Stack"),
+                "detected_title": ai_data.get("detected_role", "Target Profile Lead"),
+                "runway_days": ai_data.get("runway_days", 180),
+                "status": "watch" if ai_data.get("runway_days", 180) < 180 else "healthy",
+                "pecc_score": ai_data.get("pecc_score", 60),
+                "upe_score": ai_data.get("upe_score", 6.5),
+                "note": ai_data.get("roadmap_note", "Processing active roadmap track.")
             }
         ]
     }
