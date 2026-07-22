@@ -120,17 +120,23 @@ Return STRICTLY a raw valid JSON object (no ```json codeblock formatting):
     ai_data = None
     llm = get_llm()
 
-    if llm:
+  if llm:
         try:
             response = llm.invoke([HumanMessage(content=prompt)])
             raw_text = response.content.strip()
 
             json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
             if json_match:
-                ai_data = json.loads(json_match.group(0))
+                clean_json_str = json_match.group(0)
+                
+                # FIX FOR "Invalid control character":
+                # Convert raw control characters (newlines/tabs) so json.loads won't crash
+                clean_json_str = clean_json_str.replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+                
+                # strict=False allows control characters inside strings
+                ai_data = json.loads(clean_json_str, strict=False)
         except Exception as e:
             print(f"❌ GROQ LLM EXCEPTION LOG: {str(e)}")
-
     if not ai_data:
         target_role = user_manual_input if user_manual_input else "Target Role"
         ai_data = {
